@@ -1,2 +1,4 @@
-rayliblua.h
-raylib_api.lua
+.DS_Store
+**/.DS_Store
+build/
+.vscode/
