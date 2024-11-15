@@ -1,4 +1,4 @@
-### raylua
+# raylua
 
 Lua bindings generator + runner for raylib, raymath + rlgl 
 
