@@ -362,7 +362,7 @@ for _, v in ipairs(all) do
     generateFunctionDefinitions(v)
 end
 
-io.write("static void initialize_raylua(lua_State *L) {\n")
+io.write("void initialize_raylua(lua_State *L) {\n")
 io.write("  luaL_Reg funcs[] = {\n")
 for i = 1, #funcLib do
     io.write("    {\"" .. funcLib[i] .. "\", lua_" .. funcLib[i] .. "},\n")

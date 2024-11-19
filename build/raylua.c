@@ -6467,7 +6467,7 @@ static int lua_rlLoadDrawQuad(lua_State *L) {
   rlLoadDrawQuad();
   return 0;
 }
-static void initialize_raylua(lua_State *L) {
+void initialize_raylua(lua_State *L) {
   luaL_Reg funcs[] = {
     {"InitWindow", lua_InitWindow},
     {"CloseWindow", lua_CloseWindow},
