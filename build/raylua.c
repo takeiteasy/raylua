@@ -23,23 +23,20 @@
 
 // For more information, please refer to <https://unlicense.org>
 
+#ifdef RAYLUA_RUNNER
 #define LUA_IMPL
+#endif
 #include "minilua.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
-
-#define LuaPush_int(L, value)           lua_pushinteger(L, value)
-#define LuaPush_float(L, value)         lua_pushnumber(L, value);
-#define LuaPush_bool(L, value)          lua_pushboolean(L, value)
-#define LuaPush_string(L, value)        lua_pushstring(L, value)
 
 static void LuaStartEnum(lua_State* L) {
     lua_newtable(L);
 }
 
 static void LuaSetEnum(lua_State* L, const char *name, int value) {
-    LuaPush_int(L, value);
+    lua_pushinteger(L, value);
     lua_setfield(L, -2, name);
 }
 
@@ -7973,6 +7970,7 @@ static void initialize_raylua(lua_State *L) {
 }
 
 
+#ifdef RAYLUA_RUNNER
 int main(int argc, const char *argv[]) {
     if (argc <= 1)
         return 1;
@@ -7983,3 +7981,4 @@ int main(int argc, const char *argv[]) {
     lua_close(L);
     return 0;
 }
+#endif

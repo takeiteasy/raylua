@@ -25,27 +25,30 @@
 
 BUILD_DST=build
 
-bindings:
-	lua ray.lua $(BUILD_DST)/raylua.c
+default: all 
 
 builddir:
 	mkdir -p $(BUILD_DST)
 
+bindings: builddir
+	lua ray.lua $(BUILD_DST)/raylua.c
+
 raylib_library: builddir
 	cd raylib/src && $(MAKE) PLATFORM=PLATFORM_DESKTOP RAYLIB_LIBTYPE=SHARED
 
-raylib: bindings builddir raylib_library
+raylib: raylib_library
 	mv raylib/src/*.dylib $(BUILD_DST)
 
-raylua:
-	$(CC) -rpath $(BUILD_DST) $(BUILD_DST)/raylua.c -DGRAPHICS_API_OPENGL_33 -Iminilua -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/raylua
+raylua_library: bindings raylib
+	$(CC) -shared -fpic $(BUILD_DST)/raylua.c -DGRAPHICS_API_OPENGL_33 -Iminilua -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/libraylua.dylib
+
+raylua: bindings raylua_library
+	$(CC) -rpath $(BUILD_DST) $(BUILD_DST)/raylua.c -DRAYLUA_RUNNER -DGRAPHICS_API_OPENGL_33 -Iminilua -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/raylua
 
 test: raylua
 	./build/raylua test.lua
 
-default: raylua
-
-all: bindings raylib raylua
+all: raylua  
 
 clean:
 	rm -rf $(BUILD_DST)

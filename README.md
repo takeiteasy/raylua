@@ -11,6 +11,8 @@ make all
 ### TODO
 
 - [ ] Bindings + linking for raygui
+- [ ] Fix missing functions
+- [ ] Update makefile for Linux+Windows
 
 ## LICENSE
 ```
