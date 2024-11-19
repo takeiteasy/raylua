@@ -39,11 +39,27 @@ raylib_library: builddir
 raylib: raylib_library
 	mv raylib/src/*.dylib $(BUILD_DST)
 
-raylua_library: bindings raylib
-	$(CC) -shared -fpic $(BUILD_DST)/raylua.c -DGRAPHICS_API_OPENGL_33 -Iminilua -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/libraylua.dylib
+minilua: builddir
+	echo $(BUILD_DST)
+	$(CC) -shared -fpic minilua.c -o $(BUILD_DST)/libminilua.dylib
+
+raylua_library: bindings raylib minilua
+	$(CC) -shared -fpic \
+          -Ideps \
+          -Iminilua \
+		  -Iraylib/src \
+          $(BUILD_DST)/raylua.c \
+          -DGRAPHICS_API_OPENGL_33 \
+          -L$(BUILD_DST) -lminilua -lraylib -o $(BUILD_DST)/libraylua.dylib
 
 raylua: bindings raylua_library
-	$(CC) -rpath $(BUILD_DST) $(BUILD_DST)/raylua.c -DRAYLUA_RUNNER -DGRAPHICS_API_OPENGL_33 -Iminilua -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/raylua
+	$(CC) -rpath $(BUILD_DST) \
+		  -Iraylib/src \
+		  -Iminilua \
+		  $(BUILD_DST)/raylua.c \
+          -DRAYLUA_RUNNER -DGRAPHICS_API_OPENGL_33 \
+          -L$(BUILD_DST) -lminilua -lraylib \
+          -o $(BUILD_DST)/raylua
 
 test: raylua
 	./build/raylua test.lua
