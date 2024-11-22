@@ -1,2 +1,2 @@
 #define LUA_IMPL
-#include "minilua/minilua.h"
+#include "minilua.h"
