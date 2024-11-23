@@ -30,6 +30,9 @@ default: all
 builddir:
 	mkdir -p $(BUILD_DST)
 
+minilua:
+	wget -O https://raw.githubusercontent.com/edubart/minilua/refs/heads/main/minilua.h
+
 raylib-api:
 	git clone https://github.com/RobLoach/raylib-api.git
 
@@ -39,17 +42,17 @@ bindings: builddir raylib-api
 raylib:
 	git clone https://github.com/raysan5/raylib.git; cd raylib; git checkout 5.5
 
-raylib_library: builddir
+raylib_library: builddir raylib
 	cd raylib/src && $(MAKE) PLATFORM=PLATFORM_DESKTOP RAYLIB_LIBTYPE=SHARED
 
 raylib_build: raylib_library
 	mv raylib/src/*.dylib $(BUILD_DST)
 
-raylua_library: bindings raylib_build
-	$(CC) -shared -fpic $(BUILD_DST)/raylua.c -DGRAPHICS_API_OPENGL_33 -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/libraylua.dylib
+raylua_library: bindings raylib_build minilua
+	$(CC) -shared -fpic $(BUILD_DST)/raylua.c minilua.c -I. -DGRAPHICS_API_OPENGL_33 -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/libraylua.dylib
 
 raylua: bindings raylua_library
-	$(CC) -rpath $(BUILD_DST) $(BUILD_DST)/raylua.c -DRAYLUA_RUNNER -DGRAPHICS_API_OPENGL_33 -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/raylua
+	$(CC) -rpath $(BUILD_DST) $(BUILD_DST)/raylua.c -I. -DRAYLUA_RUNNER -DGRAPHICS_API_OPENGL_33 -Iraylib/src -L$(BUILD_DST) -lraylib -o $(BUILD_DST)/raylua
 
 test: raylua
 	./build/raylua test.lua
